@@ -34,7 +34,13 @@ def extract_email(text: str) -> str | None:
     if match:
         # Exclude common false positives like "info@...", "admissions@..."
         email = match.group(0)
-        ignorable_prefixes = ["info@", "admin@", "admissions@", "enquiries@", "webmaster@"]
+        ignorable_prefixes = [
+            "info@", "admin@", "admissions", "enquiries", "webmaster@", "scholarship", "library", 
+            "legal", "governance", "employer", "alumni", "pg-", "ug-", "ug.", "pg.", "support", 
+            "event", "business", "global", "sport", "data.", "helpdesk", "finance", "hello",
+            "international", "study@", "undergraduate", "postgraduate", "tuition", "visit.", 
+            "careers", "pgr", "recruitment", "facilities"
+        ]
         if any(email.lower().startswith(p) for p in ignorable_prefixes):
             return None
         return email
@@ -79,7 +85,31 @@ def is_likely_name(name: str) -> bool:
         "engage", "with", "us", "news", "event", "events", "department", "school", "faculty", 
         "contact", "about", "home", "research", "projects", "publications", "welcome",
         "science", "computer", "mathematics", "physics", "medical", "engineering", "economics",
-        "institute", "centre", "center", "laboratory", "university", "college", "group", "team"
+        "institute", "centre", "center", "laboratory", "university", "college", "group", "team",
+        "apply", "scholarships", "scholarship", "admissions", "unit", "facility", "centrifuge",
+        "academy", "protection", "scheme", "decisions", "discounts", "costs", "servicedesk",
+        "guide", "students", "tours", "services", "travel", "culture", "policy", "development",
+        "community", "invoices", "education", "libraries", "status", "knowledge", "commercial",
+        "alumni", "chapters", "parents", "together", "certificate", "taught", "advice", "training",
+        "sponsorship", "hall", "create", "choice", "degrees", "access", "biomarkers", "reduction",
+        "composites", "methods", "biology", "innovation", "partnership", "synthesis", "module",
+        "challenges", "supporters", "schools", "helpdesk", "programme", "studies", "history",
+        "languages", "classics", "drama", "film", "geography", "law", "music", "nursing",
+        "optometry", "pharmacy", "psychology", "health", "religions", "therapy", "distance",
+        "biomedical", "cancer", "geotechnical", "cyber", "security", "environmental", "hydraulics",
+        "genetics", "human", "justice", "machine", "intelligence", "long", "term", "conditions",
+        "digital", "accessibility", "publication", "additional", "it", "receiving", "occasional",
+        "campus", "getting", "here", "uk", "recruitment", "our", "let's", "work", "res", "rec",
+        "man", "technicians", "nu", "continuing", "active", "charitable", "employer", "transfer",
+        "carers", "standing", "sci", "asq", "enquiries", "pg", "fusion", "international", "visa",
+        "english", "language", "intramural", "club", "taliesin", "fse", "intl", "your", "megs",
+        "administrator", "changing", "course", "undergraduate", "ug", "american", "art", "business",
+        "accounting", "cogneuro", "ugadmissions", "hcri", "libarts", "lel", "midwifery",
+        "publichealth", "slt", "manchester", "bicentenary", "audiology", "dentistry", "medicine",
+        "quantum", "irdr", "swc", "sop", "sts", "steapp", "office", "choosebristol", "advanced",
+        "fls", "chem", "earth", "engbiocdt", "find", "bristol", "fohs", "artf", "practice-oriented",
+        "qist", "social", "superconductivity", "technology", "student", "pre", "athena", "bequests",
+        "pgr", "eltc", "biosciences", "mps", "fundraising", "corporate", "summerschool", "procurement"
     ]
     if any(word.lower() in [p.lower() for p in parts] for word in blacklist):
         return False

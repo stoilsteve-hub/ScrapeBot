@@ -1,0 +1,8 @@
+playwright
+pandas
+bs4
+aiohttp
+lxml
+xlsxwriter
+nest_asyncio
+openpyxl

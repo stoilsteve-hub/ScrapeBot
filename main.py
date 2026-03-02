@@ -5,8 +5,11 @@ from crawler import Crawler
 from data_exporter import export_to_excel
 
 # For running python in environments with existing event loops (like Jupyter)
-import nest_asyncio
-nest_asyncio.apply()
+try:
+    import nest_asyncio
+    nest_asyncio.apply()
+except ImportError:
+    nest_asyncio = None
 
 # Configure root logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -19,7 +22,7 @@ async def main():
     
     # Run the crawler and get the extracted profiles
     logging.info("Crawler starting...")
-    extracted_data = []
+
     try:
         extracted_data = await crawler.run()
     except asyncio.CancelledError:

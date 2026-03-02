@@ -1,7 +1,14 @@
 import asyncio
 from urllib.parse import urlparse, urljoin
 import logging
-from playwright.async_api import async_playwright
+
+# Try to import playwright with a helpful error message if missing
+try:
+    from playwright.async_api import async_playwright
+except ImportError:
+    logging.error("Playwright is not installed. Please run: pip install playwright && playwright install chromium")
+    async_playwright = None
+
 from bs4 import BeautifulSoup
 
 from config import MAX_DEPTH, CONCURRENCY_LIMIT, PAGE_LOAD_TIMEOUT, DELAY_BETWEEN_REQUESTS
@@ -34,7 +41,11 @@ class Crawler:
                 
             # Avoid obvious spider traps (calendars, news pagination, dynamic views)
             if '?' in url:
-                return False
+                # Whitelist specific safe queries often used for pagination/profiles
+                query = parsed.query.lower()
+                safe_queries = ['page=', 'preventscrolltop=', 'prevent_scroll_top=']
+                if not any(sq in query for sq in safe_queries):
+                    return False
                 
             trap_keywords = ['/news/', '/events/', '/tag/', '/category/', '/calendar/', '/date/', '/archive/', '/blog/']
             url_lower = url.lower()
@@ -77,6 +88,32 @@ class Crawler:
                 if 'text/html' not in content_type:
                     await page.close()
                     return
+
+                try:
+                    # Reveal email / Profile clicking logic
+                    # We will find buttons or elements that might hide emails or act as profile headers
+                    reveal_selectors = [
+                        "button:has-text('email')",
+                        "a:has-text('reveal')",
+                        "button:has-text('show')",
+                        "a:has-text('email')",
+                        "h1",  # Click the main header in case it acts as a toggle
+                        ".profile-name",
+                        "[aria-label*='email' i]",
+                        "[aria-label*='show' i]"
+                    ]
+                    for selector in reveal_selectors:
+                        elements = await page.locator(selector).all()
+                        for el in elements:
+                            try:
+                                if await el.is_visible(timeout=500):
+                                    await el.click(timeout=1000)
+                            except Exception:
+                                pass # ignore unclickable or timeout errors safely
+                                
+                    await page.wait_for_timeout(1000) # Give JS a moment to inject new email into DOM
+                except Exception as click_err:
+                    logging.debug(f"Clicking reveal elements failed: {click_err}")
 
                 html_content = await page.content()
                 
@@ -124,6 +161,10 @@ class Crawler:
                 self.queue.task_done()
 
     async def run(self):
+        if async_playwright is None:
+            logging.error("Cannot run crawler: Playwright is not installed.")
+            return []
+
         async with async_playwright() as p:
             # We use a browser context
             browser = await p.chromium.launch(headless=True)

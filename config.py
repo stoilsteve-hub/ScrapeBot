@@ -42,9 +42,9 @@ TARGET_DEPARTMENTS = [
 
 # Crawler Settings
 MAX_DEPTH = 3 # Can be adjusted based on results (Warning: large datasets will take a long time to crawl)
-CONCURRENCY_LIMIT = 5 # Avoid getting blocked
+CONCURRENCY_LIMIT = 15 # Increased for M5 Mac (16GB RAM)
 PAGE_LOAD_TIMEOUT = 30000 # 30 seconds
-DELAY_BETWEEN_REQUESTS = 1 # seconds
+DELAY_BETWEEN_REQUESTS = 0.5 # seconds
 
 # Output format
 OUTPUT_FILE = "university_phds_and_postdocs.xlsx"
