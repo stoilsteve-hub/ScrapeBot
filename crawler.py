@@ -65,7 +65,7 @@ class Crawler:
                 return
             self.visited_urls.add(url)
             
-            logging.info(f"Crawling (Depth {depth}): {url}")
+            print(f"🔍 [Depth {depth}] Scanning: {url}")
             
             # Simple delay to avoid rate limits
             await asyncio.sleep(DELAY_BETWEEN_REQUESTS)
@@ -79,7 +79,9 @@ class Crawler:
                 response = await page.goto(url, timeout=PAGE_LOAD_TIMEOUT, wait_until='domcontentloaded')
                 
                 if not response or not response.ok:
-                    logging.warning(f"Failed to fetch {url}: Status {response.status if response else 'Unknown'}")
+                    status_code = response.status if response else 'Unknown'
+                    if status_code not in (404, 403): # Ignore common 404/403 to avoid cluttering terminal too much
+                        print(f"⚠️  Skipped [Status {status_code}]: {url}")
                     await page.close()
                     return
 
@@ -124,7 +126,7 @@ class Crawler:
                     # Store if unique email
                     if not any(d.get("Email") == profile_data["Email"] for d in self.extracted_data):
                         self.extracted_data.append(profile_data)
-                        logging.info(f"+++ EXTRACTED: {profile_data['Full Name']} - {profile_data['Email']}")
+                        print(f"✨ BINGO! Extracted: {profile_data['Full Name']} ({profile_data['Department/Research Area']}) ✉️  {profile_data['Email']}")
 
                 # 2. Extract links for further crawling if within depth
                 if depth < MAX_DEPTH:

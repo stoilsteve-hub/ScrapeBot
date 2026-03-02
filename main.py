@@ -15,24 +15,24 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 async def main():
-    logging.info(f"Starting Scraper Bot for {len(UNIVERSITIES)} universities.")
+    print(f"\n🚀 STARTING SCRAPER: Targeting {len(UNIVERSITIES)} universities...\n")
     
     # Initialize the Crawler with our configured domains
     crawler = Crawler(UNIVERSITIES)
     
     # Run the crawler and get the extracted profiles
-    logging.info("Crawler starting...")
+    print("🕷️  Crawler unleashed! Searching web for PhDs and Postdocs...\n")
 
     try:
         extracted_data = await crawler.run()
     except asyncio.CancelledError:
-        logging.info("Crawler tasks cancelled.")
+        print("\n🛑 Crawler tasks cancelled.")
         extracted_data = crawler.extracted_data
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        print(f"\n❌ Unexpected error: {e}")
         extracted_data = crawler.extracted_data
     
-    logging.info(f"Crawler finished. Total profiles extracted: {len(extracted_data)}")
+    print(f"\n✅ CRAWL COMPLETE! 🎓 Total profiles extracted: {len(extracted_data)}")
     
     # Export the populated data
     export_to_excel(extracted_data, OUTPUT_FILE)
@@ -41,4 +41,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logging.info("Scraping manually interrupted. Exiting gracefully.")
+        print("\n🛑 Scraping manually interrupted. Saving data and exiting gracefully...")
