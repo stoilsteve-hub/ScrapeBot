@@ -3,10 +3,12 @@
 Python web scraper built with Playwright and BeautifulSoup to extract PhD and Postdoc profiles from 23 UK university directories.
 
 ## Features
-- Concurrently crawls domains up to depth 3
+- Concurrently crawls domains up to depth 3 (optimized for M5 Mac)
 - Targets exact roles: PhD Student, Doctoral Researcher, Postdoc, Fellow Researcher
-- Excludes professors, lecturers, and directors
-- Avoids spider traps (calendars, news archives, tags)
+- Aggressively filters generic department and support pages with 100+ keyword blacklist
+- Automatically clicks on profiles and "reveal" buttons to unhide JavaScript-protected emails
+- Parses and whitelists specific paginated directories without getting trapped
+- Terminal output to track live extraction progress
 - Exports matches to `.xlsx` and `.csv` formats
 
 ## Requirements
